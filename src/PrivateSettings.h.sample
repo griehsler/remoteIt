@@ -1,0 +1,18 @@
+/////////////////////////
+// Sample private settings file. Copy it, rename to PrivateSettings.h and adjust settings.
+/////////////////////////
+
+
+#define HOSTNAME "Remote1"
+
+#define WIFI_SSID "mySSID"
+#define WIFI_PASSWORD "myPassword"
+
+#define BUTTON1_PIN D5
+#define BUTTON1_TARGETHOST "light1.home"
+// #define BUTTON2_PIN D6
+// #define BUTTON2_TARGETHOST "light2.home"
+// #define BUTTON1_PIN D7
+// #define BUTTON!_TARGETHOST "light3.home"
+// #define BUTTON1_PIN D8
+// #define BUTTON!_TARGETHOST "light4.home"
