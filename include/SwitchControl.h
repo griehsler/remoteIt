@@ -9,9 +9,8 @@ public:
     void On();
     void Off();
     void Toggle();
-    String GetStatus();
 
 private:
     String _switchHost;
-    String Get(String command);
+    int Get(String command);
 };

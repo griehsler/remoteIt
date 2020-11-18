@@ -8,6 +8,8 @@
 #include "Settings.h"
 #include "PrivateSettings.h"
 
+// #define SERIAL_OUTPUT
+
 Storage _storage;
 Settings _settings;
 Network _network(&_settings);
@@ -17,6 +19,8 @@ void checkAndToggle(uint8_t triggeredPin, uint8_t targetPin, String targetHost)
 {
   if (triggeredPin == targetPin)
   {
+    Serial.print("switching by pin ");
+    Serial.println(targetPin);
     SwitchControl control(targetHost);
     control.Toggle();
   }
@@ -24,8 +28,11 @@ void checkAndToggle(uint8_t triggeredPin, uint8_t targetPin, String targetHost)
 
 void buttonChanged(uint8_t pin, bool pressed)
 {
+  Serial.println("detected button state change");
   if (!pressed) // don't react to button being released
     return;
+
+  Serial.println("detected button press");
 
 #if defined BUTTON1_PIN && defined BUTTON1_TARGETHOST
   checkAndToggle(pin, BUTTON1_PIN, BUTTON1_TARGETHOST);
@@ -43,6 +50,10 @@ void buttonChanged(uint8_t pin, bool pressed)
 
 void setup()
 {
+#ifdef SERIAL_OUTPUT
+  Serial.begin(74880);
+#endif
+
   _settings.hostName = HOSTNAME;
   _settings.otherAPSSID = WIFI_SSID;
   _settings.otherAPPassword = WIFI_PASSWORD;
