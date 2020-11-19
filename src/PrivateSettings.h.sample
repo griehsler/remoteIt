@@ -12,7 +12,7 @@
 #define BUTTON1_TARGETHOST "light1.home"
 // #define BUTTON2_PIN D6
 // #define BUTTON2_TARGETHOST "light2.home"
-// #define BUTTON1_PIN D7
-// #define BUTTON!_TARGETHOST "light3.home"
-// #define BUTTON1_PIN D8
-// #define BUTTON!_TARGETHOST "light4.home"
+// #define BUTTON3_PIN D7
+// #define BUTTON3_TARGETHOST "light3.home"
+// #define BUTTON4_PIN D8
+// #define BUTTON4_TARGETHOST "light4.home"
