@@ -6,13 +6,15 @@
 #include <SwitchControl.h>
 
 #include "Settings.h"
+#include "LedNetworkStatusMonitor.h"
 #include "PrivateSettings.h"
 
-// #define SERIAL_OUTPUT
+#define SERIAL_OUTPUT
 
 Storage _storage;
 Settings _settings;
-Network _network(&_settings);
+LedNetworkStatusMonitor _statusMonitor(LED_BUILTIN);
+Network _network(&_settings, &_statusMonitor);
 Buttons _buttons;
 
 void checkAndToggle(uint8_t triggeredPin, uint8_t targetPin, String targetHost)
