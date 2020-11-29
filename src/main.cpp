@@ -1,21 +1,30 @@
 #include <Arduino.h>
+#include <Ticker.h>
+#include <InfluxDbClient.h>
 
 #include <Network.h>
 #include <Storage.h>
 #include <Buttons.h>
 #include <SwitchControl.h>
+#include <Battery.h>
 
 #include "Settings.h"
 #include "LedNetworkStatusMonitor.h"
 #include "PrivateSettings.h"
 
-#define SERIAL_OUTPUT
+// #define SERIAL_OUTPUT
+#define BATTERY_REPORT_INTERVAL 10 * 60 // seconds
 
 Storage _storage;
 Settings _settings;
 LedNetworkStatusMonitor _statusMonitor(LED_BUILTIN);
 Network _network(&_settings, &_statusMonitor);
 Buttons _buttons;
+Battery _battery(A0);
+
+Ticker ticker;
+bool reportBattery = false;
+InfluxDBClient client;
 
 void checkAndToggle(uint8_t triggeredPin, uint8_t targetPin, String targetHost)
 {
@@ -50,6 +59,30 @@ void buttonChanged(uint8_t pin, bool pressed)
 #endif
 }
 
+void triggerBatteryReport()
+{
+  reportBattery = true;
+  Serial.println("setting marker for battery report");
+}
+
+void sendBatteryReport()
+{
+  int newRawValue = _battery.measureRaw();
+  float newRelativeValue = _battery.normalize(newRawValue);
+
+  Serial.print("sending new battery report, rawValue=");
+  Serial.println(newRawValue);
+
+  Point dataPoint("battery_status");
+  dataPoint.addTag("device", _settings.hostName);
+  dataPoint.addField("raw", newRawValue);
+  dataPoint.addField("relative", newRelativeValue);
+
+  client.writePoint(dataPoint);
+
+  Serial.println("sent battery report");
+}
+
 void setup()
 {
 #ifdef SERIAL_OUTPUT
@@ -77,10 +110,21 @@ void setup()
   _buttons.registerButton(BUTTON4_PIN, ButtonMode::WaitForLow, buttonChanged);
 #endif
   _buttons.setup();
+
+  _battery.setup();
+  client.setConnectionParamsV1(INFLUXDB_URL, INFLUXDB_DB_NAME, INFLUXDB_USER, INFLUXDB_PWD);
+  client.setInsecure(true);
+  ticker.attach(BATTERY_REPORT_INTERVAL, triggerBatteryReport);
 }
 
 void loop()
 {
   _network.loop();
   _buttons.loop();
+
+  if (reportBattery)
+  {
+    reportBattery = false;
+    sendBatteryReport();
+  }
 }
