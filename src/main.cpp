@@ -93,7 +93,20 @@ void setup()
   _settings.otherAPSSID = WIFI_SSID;
   _settings.otherAPPassword = WIFI_PASSWORD;
 
-  _settings.store(_storage);
+#if defined STATIC_IP && defined GATEWAY && defined SUBNET
+  _settings.staticIP = STATIC_IP;
+  _settings.gateway = GATEWAY;
+  _settings.subnet = SUBNET;
+
+#ifdef DNS1
+  _settings.dns1 = DNS1;
+#endif
+#ifdef DNS2
+  _settings.dns2 = DNS2;
+#endif
+#endif
+
+  // _settings.store(_storage);
 
   _network.setup();
 
